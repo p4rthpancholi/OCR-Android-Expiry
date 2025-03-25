@@ -1,0 +1,216 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.expirydetector"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+8-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="33" />
+9-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml
+10
+11    <!-- Camera permission is required for taking photos -->
+12    <uses-permission android:name="android.permission.CAMERA" />
+12-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:6:5-65
+12-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:6:22-62
+13    <!-- Feature requirement for camera -->
+14    <uses-feature
+14-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:8:5-84
+15        android:name="android.hardware.camera"
+15-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:8:19-57
+16        android:required="true" />
+16-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:8:58-81
+17
+18    <permission
+18-->[androidx.core:core:1.9.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/72a3b6e17c6a3dedffbcbb23be2da9f1/transformed/core-1.9.0/AndroidManifest.xml:22:5-24:47
+19        android:name="com.example.expirydetector.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+19-->[androidx.core:core:1.9.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/72a3b6e17c6a3dedffbcbb23be2da9f1/transformed/core-1.9.0/AndroidManifest.xml:23:9-81
+20        android:protectionLevel="signature" />
+20-->[androidx.core:core:1.9.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/72a3b6e17c6a3dedffbcbb23be2da9f1/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
+21
+22    <uses-permission android:name="com.example.expirydetector.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+22-->[androidx.core:core:1.9.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/72a3b6e17c6a3dedffbcbb23be2da9f1/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
+22-->[androidx.core:core:1.9.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/72a3b6e17c6a3dedffbcbb23be2da9f1/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
+23    <!-- <uses-sdk android:minSdkVersion="14"/> -->
+24    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+24-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:25:5-79
+24-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:25:22-76
+25    <uses-permission android:name="android.permission.INTERNET" />
+25-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:26:5-67
+25-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:26:22-64
+26
+27    <application
+27-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:10:5-25:19
+28        android:allowBackup="true"
+28-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:11:9-35
+29        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+29-->[androidx.core:core:1.9.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/72a3b6e17c6a3dedffbcbb23be2da9f1/transformed/core-1.9.0/AndroidManifest.xml:28:18-86
+30        android:debuggable="true"
+31        android:icon="@mipmap/ic_launcher"
+31-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:12:9-43
+32        android:label="@string/app_name"
+32-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:13:9-41
+33        android:roundIcon="@mipmap/ic_launcher_round"
+33-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:14:9-54
+34        android:supportsRtl="true"
+34-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:15:9-35
+35        android:testOnly="true"
+36        android:theme="@style/Theme.ExpiryDetector" >
+36-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:16:9-52
+37        <activity
+37-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:17:9-24:20
+38            android:name="com.example.expirydetector.MainActivity"
+38-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:18:13-41
+39            android:exported="true" >
+39-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:19:13-36
+40            <intent-filter>
+40-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:20:13-23:29
+41                <action android:name="android.intent.action.MAIN" />
+41-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:21:17-69
+41-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:21:25-66
+42
+43                <category android:name="android.intent.category.LAUNCHER" />
+43-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:22:17-77
+43-->/Users/parth.pancholi/StudioProjects/OCR-Android-Expiry/app/src/main/AndroidManifest.xml:22:27-74
+44            </intent-filter>
+45        </activity>
+46
+47        <service
+47-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:9:9-15:19
+48            android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
+48-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:10:13-91
+49            android:directBootAware="true"
+49-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:17:13-43
+50            android:exported="false" >
+50-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:11:13-37
+51            <meta-data
+51-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:12:13-14:85
+52                android:name="com.google.firebase.components:com.google.mlkit.vision.text.internal.TextRegistrar"
+52-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:13:17-114
+53                android:value="com.google.firebase.components.ComponentRegistrar" />
+53-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:14:17-82
+54            <meta-data
+54-->[com.google.mlkit:vision-common:17.2.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0b163ef8eb24313863442023102dbc4c/transformed/jetified-vision-common-17.2.1/AndroidManifest.xml:12:13-14:85
+55                android:name="com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar"
+55-->[com.google.mlkit:vision-common:17.2.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0b163ef8eb24313863442023102dbc4c/transformed/jetified-vision-common-17.2.1/AndroidManifest.xml:13:17-124
+56                android:value="com.google.firebase.components.ComponentRegistrar" />
+56-->[com.google.mlkit:vision-common:17.2.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0b163ef8eb24313863442023102dbc4c/transformed/jetified-vision-common-17.2.1/AndroidManifest.xml:14:17-82
+57            <meta-data
+57-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:20:13-22:85
+58                android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar"
+58-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:21:17-120
+59                android:value="com.google.firebase.components.ComponentRegistrar" />
+59-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:22:17-82
+60        </service>
+61
+62        <provider
+62-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:9:9-13:38
+63            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
+63-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:10:13-78
+64            android:authorities="com.example.expirydetector.mlkitinitprovider"
+64-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:11:13-69
+65            android:exported="false"
+65-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:12:13-37
+66            android:initOrder="99" />
+66-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:13:13-35
+67
+68        <activity
+68-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:20:9-22:45
+69            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+69-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:20:19-85
+70            android:exported="false"
+70-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:22:19-43
+71            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+71-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:21:19-78
+72
+73        <meta-data
+73-->[com.google.android.gms:play-services-basement:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/950c4c97c72dd798d9fabad5c322bfd2/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:21:9-23:69
+74            android:name="com.google.android.gms.version"
+74-->[com.google.android.gms:play-services-basement:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/950c4c97c72dd798d9fabad5c322bfd2/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:22:13-58
+75            android:value="@integer/google_play_services_version" />
+75-->[com.google.android.gms:play-services-basement:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/950c4c97c72dd798d9fabad5c322bfd2/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:23:13-66
+76
+77        <uses-library
+77-->[androidx.window:window:1.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ceb65bc28ffdb1b6cebdfe56666c2e47/transformed/jetified-window-1.0.0/AndroidManifest.xml:25:9-27:40
+78            android:name="androidx.window.extensions"
+78-->[androidx.window:window:1.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ceb65bc28ffdb1b6cebdfe56666c2e47/transformed/jetified-window-1.0.0/AndroidManifest.xml:26:13-54
+79            android:required="false" />
+79-->[androidx.window:window:1.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ceb65bc28ffdb1b6cebdfe56666c2e47/transformed/jetified-window-1.0.0/AndroidManifest.xml:27:13-37
+80        <uses-library
+80-->[androidx.window:window:1.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ceb65bc28ffdb1b6cebdfe56666c2e47/transformed/jetified-window-1.0.0/AndroidManifest.xml:28:9-30:40
+81            android:name="androidx.window.sidecar"
+81-->[androidx.window:window:1.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ceb65bc28ffdb1b6cebdfe56666c2e47/transformed/jetified-window-1.0.0/AndroidManifest.xml:29:13-51
+82            android:required="false" />
+82-->[androidx.window:window:1.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ceb65bc28ffdb1b6cebdfe56666c2e47/transformed/jetified-window-1.0.0/AndroidManifest.xml:30:13-37
+83
+84        <service
+84-->[androidx.camera:camera-camera2:1.2.0-alpha02] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0220d236f4a4f45ec7dfb089fbd084ec/transformed/jetified-camera-camera2-1.2.0-alpha02/AndroidManifest.xml:25:9-34:19
+85            android:name="androidx.camera.core.impl.MetadataHolderService"
+85-->[androidx.camera:camera-camera2:1.2.0-alpha02] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0220d236f4a4f45ec7dfb089fbd084ec/transformed/jetified-camera-camera2-1.2.0-alpha02/AndroidManifest.xml:26:13-75
+86            android:enabled="false"
+86-->[androidx.camera:camera-camera2:1.2.0-alpha02] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0220d236f4a4f45ec7dfb089fbd084ec/transformed/jetified-camera-camera2-1.2.0-alpha02/AndroidManifest.xml:27:13-36
+87            android:exported="false" >
+87-->[androidx.camera:camera-camera2:1.2.0-alpha02] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0220d236f4a4f45ec7dfb089fbd084ec/transformed/jetified-camera-camera2-1.2.0-alpha02/AndroidManifest.xml:28:13-37
+88            <meta-data
+88-->[androidx.camera:camera-camera2:1.2.0-alpha02] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0220d236f4a4f45ec7dfb089fbd084ec/transformed/jetified-camera-camera2-1.2.0-alpha02/AndroidManifest.xml:31:13-33:89
+89                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
+89-->[androidx.camera:camera-camera2:1.2.0-alpha02] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0220d236f4a4f45ec7dfb089fbd084ec/transformed/jetified-camera-camera2-1.2.0-alpha02/AndroidManifest.xml:32:17-103
+90                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
+90-->[androidx.camera:camera-camera2:1.2.0-alpha02] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0220d236f4a4f45ec7dfb089fbd084ec/transformed/jetified-camera-camera2-1.2.0-alpha02/AndroidManifest.xml:33:17-86
+91        </service>
+92
+93        <provider
+93-->[androidx.emoji2:emoji2:1.2.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/b14d2c45c3f5c8511a0f7a84d78e6cb0/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+94            android:name="androidx.startup.InitializationProvider"
+94-->[androidx.emoji2:emoji2:1.2.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/b14d2c45c3f5c8511a0f7a84d78e6cb0/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+95            android:authorities="com.example.expirydetector.androidx-startup"
+95-->[androidx.emoji2:emoji2:1.2.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/b14d2c45c3f5c8511a0f7a84d78e6cb0/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+96            android:exported="false" >
+96-->[androidx.emoji2:emoji2:1.2.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/b14d2c45c3f5c8511a0f7a84d78e6cb0/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+97            <meta-data
+97-->[androidx.emoji2:emoji2:1.2.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/b14d2c45c3f5c8511a0f7a84d78e6cb0/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+98                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+98-->[androidx.emoji2:emoji2:1.2.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/b14d2c45c3f5c8511a0f7a84d78e6cb0/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+99                android:value="androidx.startup" />
+99-->[androidx.emoji2:emoji2:1.2.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/b14d2c45c3f5c8511a0f7a84d78e6cb0/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+100            <meta-data
+100-->[androidx.lifecycle:lifecycle-process:2.4.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/be46d497c9d730e7a8f71fd2a36566a4/transformed/jetified-lifecycle-process-2.4.1/AndroidManifest.xml:31:13-33:52
+101                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+101-->[androidx.lifecycle:lifecycle-process:2.4.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/be46d497c9d730e7a8f71fd2a36566a4/transformed/jetified-lifecycle-process-2.4.1/AndroidManifest.xml:32:17-78
+102                android:value="androidx.startup" />
+102-->[androidx.lifecycle:lifecycle-process:2.4.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/be46d497c9d730e7a8f71fd2a36566a4/transformed/jetified-lifecycle-process-2.4.1/AndroidManifest.xml:33:17-49
+103        </provider>
+104
+105        <service
+105-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:29:9-35:19
+106            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+106-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:30:13-103
+107            android:exported="false" >
+107-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:31:13-37
+108            <meta-data
+108-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:32:13-34:39
+109                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+109-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:33:17-94
+110                android:value="cct" />
+110-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /Users/parth.pancholi/.gradle/caches/8.10/transforms/a926977e2d970d9e63621860fec0760b/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:34:17-36
+111        </service>
+112        <service
+112-->[com.google.android.datatransport:transport-runtime:2.2.6] /Users/parth.pancholi/.gradle/caches/8.10/transforms/1a749e687c2c8193252a732d77d66e5a/transformed/jetified-transport-runtime-2.2.6/AndroidManifest.xml:26:9-30:19
+113            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+113-->[com.google.android.datatransport:transport-runtime:2.2.6] /Users/parth.pancholi/.gradle/caches/8.10/transforms/1a749e687c2c8193252a732d77d66e5a/transformed/jetified-transport-runtime-2.2.6/AndroidManifest.xml:27:13-117
+114            android:exported="false"
+114-->[com.google.android.datatransport:transport-runtime:2.2.6] /Users/parth.pancholi/.gradle/caches/8.10/transforms/1a749e687c2c8193252a732d77d66e5a/transformed/jetified-transport-runtime-2.2.6/AndroidManifest.xml:28:13-37
+115            android:permission="android.permission.BIND_JOB_SERVICE" >
+115-->[com.google.android.datatransport:transport-runtime:2.2.6] /Users/parth.pancholi/.gradle/caches/8.10/transforms/1a749e687c2c8193252a732d77d66e5a/transformed/jetified-transport-runtime-2.2.6/AndroidManifest.xml:29:13-69
+116        </service>
+117
+118        <receiver
+118-->[com.google.android.datatransport:transport-runtime:2.2.6] /Users/parth.pancholi/.gradle/caches/8.10/transforms/1a749e687c2c8193252a732d77d66e5a/transformed/jetified-transport-runtime-2.2.6/AndroidManifest.xml:32:9-34:40
+119            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+119-->[com.google.android.datatransport:transport-runtime:2.2.6] /Users/parth.pancholi/.gradle/caches/8.10/transforms/1a749e687c2c8193252a732d77d66e5a/transformed/jetified-transport-runtime-2.2.6/AndroidManifest.xml:33:13-132
+120            android:exported="false" />
+120-->[com.google.android.datatransport:transport-runtime:2.2.6] /Users/parth.pancholi/.gradle/caches/8.10/transforms/1a749e687c2c8193252a732d77d66e5a/transformed/jetified-transport-runtime-2.2.6/AndroidManifest.xml:34:13-37
+121    </application>
+122
+123</manifest>

@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.example.expirydetector.app-mergeDebugResources-52:/layout/fragment_result.xml",
+        "source": "com.example.expirydetector.app-main-55:/layout/fragment_result.xml"
+    },
+    {
+        "merged": "com.example.expirydetector.app-mergeDebugResources-52:/layout/activity_main.xml",
+        "source": "com.example.expirydetector.app-main-55:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.expirydetector.app-mergeDebugResources-52:/layout/fragment_camera.xml",
+        "source": "com.example.expirydetector.app-main-55:/layout/fragment_camera.xml"
+    }
+]
