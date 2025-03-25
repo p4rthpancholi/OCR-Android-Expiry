@@ -4,7 +4,7 @@ modules = ["android"]
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Android Build & Run"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -48,23 +48,5 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "./gradlew installDebug && adb shell am start -n com.example.expirydetector/.MainActivity"
 
-[[workflows.workflow]]
-name = "Android Build & Run"
-author = 40833914
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./gradlew :app:clean"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./gradlew :app:assembleDebug"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./gradlew :app:installDebug"
-
 [deployment]
 run = ["sh", "-c", "./gradlew :app:installDebug"]
-build = ["sh", "-c", "./gradlew :app:assembleDebug"]
