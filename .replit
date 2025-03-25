@@ -1,0 +1,52 @@
+modules = ["android"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Android App Run"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "android_app"
+
+[[workflows.workflow]]
+name = "Android App Run"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "./gradlew :app:installDebug"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "android_app"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "./gradlew installDebug && adb shell am start -n com.example.expirydetector/.MainActivity"
+
+[deployment]
+run = ["sh", "-c", "./gradlew :app:installDebug"]
