@@ -64,6 +64,32 @@ object DateExtractor {
         createDatePatterns()
     }
 
+    // Common patterns to avoid (prices, product codes, etc.)
+    private val avoidPatterns by lazy {
+        try {
+            listOf(
+                // Price patterns
+                Pattern.compile("\\$\\d+\\.\\d{2}"),       // $12.99 format
+                Pattern.compile("\\d+\\.\\d{2}/lb"),       // 5.99/lb format
+                Pattern.compile("\\$\\d+\\.\\d{2}/lb"),    // $5.99/lb format
+                Pattern.compile("\\d+\\.\\d{2}\\s*/lb"),   // 5.99 /lb format
+                Pattern.compile("price.*\\$\\d+\\.\\d{2}"), // price $5.99 format
+
+                // Product codes, PLUs, and other numeric patterns
+                Pattern.compile("\\d{3}-\\d{2}"),          // 296-01 format (common PLU code)
+                Pattern.compile("PLU\\s*\\d{4}"),          // PLU 1234 format
+                Pattern.compile("UPC\\s*\\d+"),            // UPC codes
+                Pattern.compile("SKU\\s*\\d+"),            // SKU codes
+                Pattern.compile("\\d+:\\d{2}[AP]M"),       // 10:34AM time format
+                Pattern.compile("Item\\s*#\\s*\\d+"),      // Item # codes
+                Pattern.compile("Lot\\s*\\d+")             // Lot numbers
+            )
+        } catch (e: PatternSyntaxException) {
+            Log.e(TAG, "Error compiling avoid patterns", e)
+            emptyList<Pattern>()
+        }
+    }
+
     private fun createDatePatterns(): List<Pattern> {
         val patterns = mutableListOf<Pattern>()
 
@@ -81,7 +107,7 @@ object DateExtractor {
             patterns.add(Pattern.compile("(0?[1-9]|1[0-2])[/\\-\\.](20\\d{2}|\\d{2})"))
 
             // YYYY/MM or YYYY-MM
-            patterns.add(Pattern.compile("(20\\d{2}|\\d{2})[/\\-\\.](0?[1-9]|1[0-2})"))
+            patterns.add(Pattern.compile("(20\\d{2}|\\d{2})[/\\-\\.](0?[1-9]|1[0-2])"))
 
             // DD.MM.YY format (common in Europe/Australia)
             patterns.add(Pattern.compile("(0?[1-9]|[12][0-9]|3[01])\\.(0?[1-9]|1[0-2])\\.(20\\d{2}|\\d{2})"))
@@ -105,10 +131,7 @@ object DateExtractor {
             // DD/MMM/YY format (e.g., 22/DE/21) - European with text month
             patterns.add(Pattern.compile("(0?[1-9]|[12][0-9]|3[01])[/\\-\\.]((?i)$extendedMonthPattern)[/\\-\\.](20\\d{2}|\\d{2})"))
 
-            // MM, DD or MM DD format (12, 31 or 12 31)
-            patterns.add(Pattern.compile("(0?[1-9]|1[0-2])(?:[\\s.,]+)(0?[1-9]|[12][0-9]|3[01])\\b"))
-
-            // Common text markers followed by date
+            // Common text markers followed by date - this is the most reliable pattern for expiry dates
             patterns.add(Pattern.compile("(?i)(?:exp|exp date|expiry|best before|best by|use by|sell by|sell thru|sell through|display until|good until|good thru|consume by|use before|better if used by)[\\s:]+([0-9]{1,2}[/\\-\\.\\s][0-9]{1,2}(?:[/\\-\\.\\s](?:20)?[0-9]{2})?)"))
 
             // Common text markers followed by text date
@@ -165,6 +188,20 @@ object DateExtractor {
         "MADE ON", "BOTTLED ON", "CANNED ON", "HARVEST DATE", "PICKED ON"
     )
 
+    // Price and weight related terms that should lower confidence in nearby dates
+    private val priceTerms = listOf(
+        "PRICE", "TOTAL PRICE", "REG PRICE", "SALE PRICE", "UNIT PRICE",
+        "NEW PRICE", "COST", "TOTAL COST", "YOU SAVE", "SAVE",
+        "$", "$/LB", "$/KG", "/LB", "/KG",
+        "PLU", "UPC", "SKU", "NET WT", "WEIGHT"
+    )
+
+    // Product code related terms to avoid
+    private val productCodeTerms = listOf(
+        "PLU", "UPC", "SKU", "ITEM #", "ITEM NO", "PRODUCT ID", "ID",
+        "CODE", "LOT", "BATCH", "SERIAL", "PART", "REF", "REFERENCE"
+    )
+
     // Format strings for date parsing
     private val dateFormats = listOf(
         "MM/dd/yy", "MM/dd/yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy/MM/dd",
@@ -180,16 +217,21 @@ object DateExtractor {
      * Higher weights indicate more likely expiration dates.
      */
     private object DateWeight {
-        const val EXPIRY_MARKER = 10.0     // Date is associated with an expiry marker like "EXP" or "BEST BEFORE"
-        const val PACKAGING_MARKER = -5.0  // Date is associated with a packaging marker like "PACKED ON"
-        const val NEAR_EXPIRY_MARKER = 5.0 // Date is near a text marker like "EXP" or "BEST BEFORE"
-        const val CIRCLED_OR_HIGHLIGHTED = 8.0   // Date appears to be circled, highlighted, or emphasized
-        const val AFTER_PACKAGED_DATE = 7.0      // Date comes after a "packaged on" date on the same label
-        const val HAS_YEAR_COMPONENT = 5.0       // Date includes a year component
-        const val STANDARD_DATE_FORMAT = 3.0     // Date is in a common format (MM/DD/YY, etc.)
-        const val FUTURE_DATE = 4.0              // Date is in the future (likely an expiry)
-        const val PAST_DATE = -2.0               // Date is in the past (likely not an expiry)
-        const val NEAR_NUMERICAL_DATA = -3.0     // Date is near nutrition facts or pricing info
+        const val EXPIRY_MARKER = 15.0     // Date is associated with an expiry marker like "EXP" or "BEST BEFORE"
+        const val PACKAGING_MARKER = -10.0  // Date is associated with a packaging marker like "PACKED ON"
+        const val NEAR_EXPIRY_MARKER = 8.0 // Date is near a text marker like "EXP" or "BEST BEFORE"
+        const val CIRCLED_OR_HIGHLIGHTED = 5.0   // Date appears to be circled, highlighted, or emphasized
+        const val AFTER_PACKAGED_DATE = 3.0      // Date comes after a "packaged on" date on the same label
+        const val HAS_YEAR_COMPONENT = 4.0       // Date includes a year component
+        const val STANDARD_DATE_FORMAT = 2.0     // Date is in a common format (MM/DD/YY, etc.)
+        const val FUTURE_DATE = 7.0              // Date is in the future (likely an expiry)
+        const val PAST_DATE = -5.0               // Date is in the past (likely not an expiry)
+        const val NEAR_PRICE = -12.0            // Date is near price information (likely not an expiry)
+        const val IS_PRICE_FORMAT = -20.0       // Date matches a price pattern (definitely not an expiry)
+        const val NEAR_PROCESSING_DATE = -8.0   // Date is near processing/packaging information
+        const val SELL_BY_MARKER = 12.0         // Specifically marked as "Sell By" (common on meat labels)
+        const val PRODUCT_CODE_FORMAT = -25.0   // Matches product code format (definitely not a date)
+        const val NEAR_PRODUCT_CODE = -15.0     // Near a product code term like PLU, UPC, etc.
     }
 
     /**
@@ -206,22 +248,113 @@ object DateExtractor {
             // Store all date candidates with their weights
             val dateCandidates = mutableListOf<DateCandidate>()
 
-            // First check for exact patterns globally
+            // Look for specific patterns like "Sell By: MM/DD/YY" first (common in meat labels)
+            // This is the most reliable pattern
+            val sellByPattern = Pattern.compile("(?i)sell\\s*by[\\s:]*([0-9]{1,2}[/\\-\\.][0-9]{1,2}[/\\-\\.][0-9]{2,4})")
+            val sellByMatcher = sellByPattern.matcher(text)
+            if (sellByMatcher.find()) {
+                val dateStr = sellByMatcher.group(1)
+                if (dateStr != null) {
+                    var weight = DateWeight.EXPIRY_MARKER + DateWeight.SELL_BY_MARKER
+                    val parsedDate = safeParseDate(dateStr)
+
+                    if (parsedDate != null) {
+                        // If this sell-by date is in the future, give it even more weight
+                        val currentDate = Calendar.getInstance().time
+                        if (parsedDate.after(currentDate)) {
+                            weight += DateWeight.FUTURE_DATE
+                        }
+
+                        dateCandidates.add(DateCandidate(dateStr, weight, parsedDate))
+                        Log.d(TAG, "Found high-confidence Sell By date: $dateStr with weight $weight")
+                    } else {
+                        // Even if we couldn't parse it, it's still a high-confidence date
+                        dateCandidates.add(DateCandidate(dateStr, weight, null))
+                    }
+                }
+            }
+
+            // Identify price sections to avoid extracting prices as dates
+            val priceLines = identifyPriceLines(text)
+            Log.d(TAG, "Identified price lines: $priceLines")
+
+            // Identify product code sections
+            val productCodeLines = identifyProductCodeLines(text)
+            Log.d(TAG, "Identified product code lines: $productCodeLines")
+
+            // First check for patterns that we want to avoid (product codes, PLUs, etc.)
+            val avoidList = mutableListOf<Pair<String, Int>>() // (match, position)
+            for (pattern in avoidPatterns) {
+                try {
+                    val matcher = pattern.matcher(text)
+                    while (matcher.find()) {
+                        val match = matcher.group(0)
+                        val position = matcher.start()
+                        avoidList.add(Pair(match, position))
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error finding patterns to avoid", e)
+                    continue
+                }
+            }
+
+            // Check for exact date patterns globally
             for (pattern in datePatterns) {
                 try {
                     val matcher = pattern.matcher(text)
                     while (matcher.find()) {
                         val dateStr = matcher.group(0)
+                        val position = matcher.start()
+
+                        // Check if this match should be avoided
+                        val shouldAvoid = avoidList.any {
+                            val avoidStr = it.first
+                            val avoidPos = it.second
+                            dateStr.contains(avoidStr) ||
+                                    (position >= avoidPos && position <= avoidPos + avoidStr.length) ||
+                                    (avoidPos >= position && avoidPos <= position + dateStr.length)
+                        }
+
+                        if (shouldAvoid) {
+                            Log.d(TAG, "Skipping potential date: $dateStr (matches an avoid pattern)")
+                            continue
+                        }
+
+                        // Skip things that look like product codes (XXX-YY format)
+                        if (isProductCode(dateStr, text, position)) {
+                            Log.d(TAG, "Skipping product code-like date: $dateStr")
+                            continue
+                        }
+
+                        // Skip if the "date" is actually a price
+                        if (isPriceFormat(dateStr, text, position)) {
+                            Log.d(TAG, "Skipping price-like date: $dateStr")
+                            continue
+                        }
+
                         var weight = DateWeight.STANDARD_DATE_FORMAT
 
+                        // Check if date is on a product code line
+                        if (isOnProductCodeLine(text, position, productCodeLines)) {
+                            weight += DateWeight.NEAR_PRODUCT_CODE
+                            Log.d(TAG, "Date $dateStr is near product code, reducing weight")
+                            continue // Skip entirely if it's on a product code line
+                        }
+
+                        // Check if date is on a price line
+                        if (isOnPriceLine(text, position, priceLines)) {
+                            weight += DateWeight.NEAR_PRICE
+                            Log.d(TAG, "Date $dateStr is near price info, reducing weight")
+                        }
+
                         // Check if date is near an expiry marker
-                        val isNearExpiry = isNearExpiryMarker(text, matcher.start())
+                        val isNearExpiry = isNearExpiryMarker(text, position)
                         if (isNearExpiry) {
                             weight += DateWeight.NEAR_EXPIRY_MARKER
                         }
 
                         // Check if date is directly associated with an expiry marker
-                        val prevText = text.substring(maxOf(0, matcher.start() - 30), matcher.start()).lowercase(Locale.getDefault())
+                        val prevText = text.substring(maxOf(0, position - 30), position).lowercase(Locale.getDefault())
                         if (hasExpiryMarker(prevText)) {
                             weight += DateWeight.EXPIRY_MARKER
                         }
@@ -232,7 +365,7 @@ object DateExtractor {
                         }
 
                         // Check if date appears to be highlighted (surrounded by special chars)
-                        if (isHighlightedOrCircled(text, matcher.start(), matcher.end())) {
+                        if (isHighlightedOrCircled(text, position, matcher.end())) {
                             weight += DateWeight.CIRCLED_OR_HIGHLIGHTED
                         }
 
@@ -248,14 +381,13 @@ object DateExtractor {
 
                             // Log the parsed date for debugging
                             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                            Log.d(TAG, "Parsed date: ${sdf.format(parsedDate)}, Original: $dateStr")
+                            Log.d(TAG, "Parsed date: ${sdf.format(parsedDate)}, Original: $dateStr, Weight: $weight")
 
                             if (parsedDate.after(currentDate)) {
                                 // Future date gets higher weight (more likely an expiry date)
                                 weight += DateWeight.FUTURE_DATE
                             } else if (parsedDate.before(currentDate)) {
                                 // Past date gets lower weight (less likely an expiry date)
-                                // But still consider it, as it could be a recently expired product
                                 weight += DateWeight.PAST_DATE
                             }
 
@@ -274,6 +406,11 @@ object DateExtractor {
             // Process line by line for contextual analysis
             val lines = text.split("\n")
             for (line in lines) {
+                // Skip price lines and product code lines for this analysis
+                if (isPriceLine(line) || isProductCodeLine(line)) {
+                    continue
+                }
+
                 // Look for lines with expiry markers
                 val lowerLine = line.lowercase(Locale.getDefault())
                 for (marker in expiryMarkers) {
@@ -294,7 +431,11 @@ object DateExtractor {
                     lowerLine.contains("best by") || lowerLine.contains("use by")) {
                     val dateCandidate = extractDateFromLine(line.substringAfter(":", line))
                     if (dateCandidate.isNotEmpty()) {
-                        val weight = DateWeight.NEAR_EXPIRY_MARKER * 1.5
+                        var weight = DateWeight.NEAR_EXPIRY_MARKER * 1.5
+                        // Special case for "Sell By" on meat labels - very high confidence
+                        if (lowerLine.contains("sell by")) {
+                            weight += DateWeight.SELL_BY_MARKER
+                        }
                         val parsedDate = safeParseDate(dateCandidate)
                         dateCandidates.add(DateCandidate(dateCandidate, weight, parsedDate))
                     }
@@ -303,12 +444,15 @@ object DateExtractor {
                 // If no expiry markers, still extract dates for consideration
                 if (!dateCandidates.any { it.dateString in line }) {
                     val dateCandidate = extractDateFromLine(line)
-                    if (dateCandidate.isNotEmpty()) {
+                    if (dateCandidate.isNotEmpty() &&
+                        !isPriceFormat(dateCandidate, line, line.indexOf(dateCandidate)) &&
+                        !isProductCode(dateCandidate, line, line.indexOf(dateCandidate))) {
+
                         var weight = DateWeight.STANDARD_DATE_FORMAT
                         // Lower weight if it's near numerical data like pricing
                         if (line.contains("$") || line.contains("kg") || line.contains("lb") ||
                             line.contains("price") || line.contains("weight") || Regex("\\d+\\.\\d{2}").find(line) != null) {
-                            weight += DateWeight.NEAR_NUMERICAL_DATA
+                            weight += DateWeight.NEAR_PRICE
                         }
                         val parsedDate = safeParseDate(dateCandidate)
                         dateCandidates.add(DateCandidate(dateCandidate, weight, parsedDate))
@@ -333,7 +477,10 @@ object DateExtractor {
 
             if (dateCandidates.isNotEmpty()) {
                 // Filter to high-confidence dates (those with expiry markers)
-                val highConfidenceDates = dateCandidates.filter { it.weight >= (DateWeight.STANDARD_DATE_FORMAT + DateWeight.NEAR_EXPIRY_MARKER) }
+                val highConfidenceDates = dateCandidates.filter {
+                    it.weight >= (DateWeight.STANDARD_DATE_FORMAT + DateWeight.NEAR_EXPIRY_MARKER) &&
+                            it.weight > 0 // Make sure we don't include negative weights (like prices)
+                }
 
                 if (highConfidenceDates.isNotEmpty()) {
                     // From high-confidence dates, select the latest one with a parsed date
@@ -352,7 +499,9 @@ object DateExtractor {
 
                 // If no high-confidence dates, look for future dates
                 val futureDates = dateCandidates.filter {
-                    it.parsedDate != null && it.parsedDate.after(Calendar.getInstance().time)
+                    it.parsedDate != null &&
+                            it.parsedDate.after(Calendar.getInstance().time) &&
+                            it.weight > 0 // Ensure positive weight to avoid prices
                 }
 
                 if (futureDates.isNotEmpty()) {
@@ -363,15 +512,32 @@ object DateExtractor {
                 }
 
                 // If we get here, no clear expiry date was found - use the highest weighted date
+                // But avoid negative weights which are likely price-related
+                val positiveWeightDates = dateCandidates.filter { it.weight > 0 }
+                if (positiveWeightDates.isNotEmpty()) {
+                    val highestWeighted = positiveWeightDates.maxByOrNull { it.weight }
+                    Log.d(TAG, "No clear expiry found, selected highest-weighted positive date: ${highestWeighted?.dateString}")
+                    return highestWeighted?.dateString ?: positiveWeightDates.first().dateString
+                }
+
+                // If even that fails, take the overall highest weighted
                 val highestWeighted = dateCandidates.maxByOrNull { it.weight }
-                Log.d(TAG, "No clear expiry found, selected highest-weighted date: ${highestWeighted?.dateString}")
+                Log.d(TAG, "No positive weight dates, selected overall highest-weighted date: ${highestWeighted?.dateString}")
                 return highestWeighted?.dateString ?: dateCandidates.first().dateString
             }
 
             // Last resort fallback: try to find any date-like pattern
             for (line in lines) {
+                // Skip price lines and product code lines
+                if (isPriceLine(line) || isProductCodeLine(line)) {
+                    continue
+                }
+
                 val dateCandidate = extractDateFromLine(line)
-                if (dateCandidate.isNotEmpty()) {
+                if (dateCandidate.isNotEmpty() &&
+                    !isPriceFormat(dateCandidate, line, line.indexOf(dateCandidate)) &&
+                    !isProductCode(dateCandidate, line, line.indexOf(dateCandidate))) {
+
                     Log.d(TAG, "Fallback: found date-like pattern: $dateCandidate")
                     return dateCandidate
                 }
@@ -381,6 +547,263 @@ object DateExtractor {
         }
 
         return ""
+    }
+
+    /**
+     * Checks if a date string appears to be a product code
+     */
+    private fun isProductCode(dateStr: String, context: String, position: Int): Boolean {
+        try {
+            // Check common product code formats (XXX-YY)
+            if (dateStr.matches(Regex("\\d+-\\d+")) ||
+                dateStr.matches(Regex("\\d+\\s+\\d+"))) {
+                return true
+            }
+
+            // Check if it's near product code indicators
+            val windowSize = 30
+            val startWindow = maxOf(0, position - windowSize)
+            val endWindow = minOf(context.length, position + dateStr.length + windowSize)
+
+            val windowText = context.substring(startWindow, endWindow).lowercase(Locale.getDefault())
+
+            for (term in productCodeTerms) {
+                if (windowText.contains(term.lowercase(Locale.getDefault()))) {
+                    return true
+                }
+            }
+
+            // Check if it's formatted like a common product code
+            // For example, "296-01" format
+            if (dateStr.matches(Regex("\\d{3}-\\d{2}"))) {
+                return true
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking if date is product code", e)
+        }
+
+        return false
+    }
+
+    /**
+     * Identifies product code related lines in the text
+     */
+    private fun identifyProductCodeLines(text: String): List<String> {
+        val codeLines = mutableListOf<String>()
+
+        try {
+            // Split text into lines
+            val lines = text.split("\n")
+
+            // Identify lines with product code indicators
+            for (line in lines) {
+                if (isProductCodeLine(line)) {
+                    codeLines.add(line)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error identifying product code lines", e)
+        }
+
+        return codeLines
+    }
+
+    /**
+     * Checks if a line contains product code information
+     */
+    private fun isProductCodeLine(line: String): Boolean {
+        val lowerLine = line.lowercase(Locale.getDefault())
+
+        // Check for product code indicators
+        if (productCodeTerms.any { lowerLine.contains(it.lowercase(Locale.getDefault())) }) {
+            return true
+        }
+
+        // Check for specific patterns like 3-digit followed by hyphen and 2-digit (common PLU format)
+        // e.g., "296-01"
+        if (Regex("\\d{3}-\\d{2}").find(lowerLine) != null) {
+            return true
+        }
+
+        // Check for patterns like "PLU 1234"
+        if (Regex("plu\\s*\\d+").find(lowerLine) != null) {
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     * Checks if a date is on or near a product code line
+     */
+    private fun isOnProductCodeLine(text: String, datePosition: Int, codeLines: List<String>): Boolean {
+        try {
+            // Get the line containing the date
+            val lines = text.split("\n")
+            var currentPos = 0
+            for (line in lines) {
+                val endPos = currentPos + line.length
+                if (datePosition in currentPos..endPos) {
+                    // Check if this line is in the code lines
+                    if (codeLines.contains(line)) {
+                        return true
+                    }
+
+                    // Also check adjacent lines
+                    val lineIndex = lines.indexOf(line)
+                    if (lineIndex > 0 && codeLines.contains(lines[lineIndex - 1])) {
+                        return true
+                    }
+                    if (lineIndex < lines.size - 1 && codeLines.contains(lines[lineIndex + 1])) {
+                        return true
+                    }
+
+                    break
+                }
+                currentPos = endPos + 1 // +1 for the newline character
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking if date is on product code line", e)
+        }
+
+        return false
+    }
+
+    /**
+     * Identifies price-related lines in the text
+     */
+    private fun identifyPriceLines(text: String): List<String> {
+        val priceLines = mutableListOf<String>()
+
+        try {
+            // Split text into lines
+            val lines = text.split("\n")
+
+            // Identify lines with price indicators
+            for (line in lines) {
+                if (isPriceLine(line)) {
+                    priceLines.add(line)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error identifying price lines", e)
+        }
+
+        return priceLines
+    }
+
+    /**
+     * Checks if a line contains price information
+     */
+    private fun isPriceLine(line: String): Boolean {
+        val lowerLine = line.lowercase(Locale.getDefault())
+
+        // Check for price indicators
+        if (priceTerms.any { lowerLine.contains(it.lowercase(Locale.getDefault())) }) {
+            return true
+        }
+
+        // Check for price patterns
+        for (pattern in avoidPatterns) {
+            try {
+                if (pattern.matcher(line).find()) {
+                    return true
+                }
+            } catch (e: Exception) {
+                continue
+            }
+        }
+
+        // Check for common price patterns
+        if (lowerLine.contains("$") && lowerLine.contains(".")) {
+            return true
+        }
+
+        if (lowerLine.contains("price") || lowerLine.contains("cost") ||
+            lowerLine.contains("total") || lowerLine.contains("save")) {
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     * Checks if a date is on or near a price line
+     */
+    private fun isOnPriceLine(text: String, datePosition: Int, priceLines: List<String>): Boolean {
+        try {
+            // Get the line containing the date
+            val lines = text.split("\n")
+            var currentPos = 0
+            for (line in lines) {
+                val endPos = currentPos + line.length
+                if (datePosition in currentPos..endPos) {
+                    // Check if this line is in the price lines
+                    if (priceLines.contains(line)) {
+                        return true
+                    }
+
+                    // Also check adjacent lines
+                    val lineIndex = lines.indexOf(line)
+                    if (lineIndex > 0 && priceLines.contains(lines[lineIndex - 1])) {
+                        return true
+                    }
+                    if (lineIndex < lines.size - 1 && priceLines.contains(lines[lineIndex + 1])) {
+                        return true
+                    }
+
+                    break
+                }
+                currentPos = endPos + 1 // +1 for the newline character
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking if date is on price line", e)
+        }
+
+        return false
+    }
+
+    /**
+     * Checks if a date string is likely a price format
+     */
+    private fun isPriceFormat(dateStr: String, context: String, position: Int): Boolean {
+        try {
+            // Check if the date string itself looks like a price
+            if (dateStr.contains("$") || dateStr.contains("/lb") || dateStr.contains("/kg")) {
+                return true
+            }
+
+            // Look for price indicators near the date
+            val windowSize = 30
+            val startWindow = maxOf(0, position - windowSize)
+            val endWindow = minOf(context.length, position + dateStr.length + windowSize)
+
+            val windowText = context.substring(startWindow, endWindow).lowercase(Locale.getDefault())
+
+            // Check for $ signs and decimal points, typical of prices
+            if (windowText.contains("$") && windowText.contains(".") &&
+                (windowText.contains("price") || windowText.contains("/lb") || windowText.contains("total"))) {
+                return true
+            }
+
+            // Check for numbers with currency symbols nearby
+            val currencyPattern = Pattern.compile("\\$\\s*\\d+\\.\\d{2}")
+            if (currencyPattern.matcher(windowText).find()) {
+                return true
+            }
+
+            // Check if date is in a line that looks like a price line
+            val lines = context.substring(startWindow, endWindow).split("\n")
+            for (line in lines) {
+                if (line.contains(dateStr) && isPriceLine(line)) {
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking if date is price format", e)
+        }
+
+        return false
     }
 
     /**
@@ -414,6 +837,7 @@ object DateExtractor {
                     calendar.time = parsedDate
                     val year = calendar.get(Calendar.YEAR)
 
+                    // Check if year is reasonable (between 1900 and 2100)
                     if (year in 1900..2100) {
                         Log.d(TAG, "Successfully parsed with format $format: ${sdf.format(parsedDate)}")
                         return parsedDate
@@ -647,6 +1071,11 @@ object DateExtractor {
      */
     private fun extractDateFromLine(line: String): String {
         try {
+            // Skip if line appears to be product code related
+            if (isProductCodeLine(line)) {
+                return ""
+            }
+
             // Special case for European text month formats (22/DE/21)
             val europeanPattern = Pattern.compile("(0?[1-9]|[12][0-9]|3[01])[/\\-\\.]((?i)$extendedMonthPattern)[/\\-\\.](20\\d{2}|\\d{2})")
             var matcher = europeanPattern.matcher(line)
@@ -660,8 +1089,10 @@ object DateExtractor {
 
             if (matcher.find()) {
                 val potentialDate = matcher.group(0)
-                // Validate if it looks like a real date
-                if (isValidDateFormat(potentialDate)) {
+                // Validate if it looks like a real date and not a price or product code
+                if (isValidDateFormat(potentialDate) &&
+                    !isPriceFormat(potentialDate, line, matcher.start()) &&
+                    !isProductCode(potentialDate, line, matcher.start())) {
                     return potentialDate
                 }
             }
@@ -687,7 +1118,12 @@ object DateExtractor {
             matcher = monthDayPattern.matcher(line)
 
             if (matcher.find()) {
-                return matcher.group(0)
+                val potentialDate = matcher.group(0)
+                // Validate it's not a product code or price
+                if (!isPriceFormat(potentialDate, line, matcher.start()) &&
+                    !isProductCode(potentialDate, line, matcher.start())) {
+                    return potentialDate
+                }
             }
 
             // Check for standalone date patterns that are likely to be expiration dates
@@ -714,7 +1150,28 @@ object DateExtractor {
 
             // Check if we have 2 or 3 parts, as most dates are MM/YY, MM/DD/YY, etc.
             if (parts.size in 2..3 && parts.all { it.all { c -> c.isDigit() } }) {
-                // Additional validation could be added here
+                // For additional validation, we could check if month is 1-12, day is 1-31, etc.
+                if (parts.size == 3) {
+                    // If it's MM/DD/YY or DD/MM/YY format
+                    val monthOrDay1 = parts[0].toIntOrNull() ?: return false
+                    val monthOrDay2 = parts[1].toIntOrNull() ?: return false
+
+                    // Rough validation - check if potential months are valid (1-12)
+                    if (monthOrDay1 > 12 && monthOrDay2 > 12) {
+                        return false // Both can't be months
+                    }
+
+                    // Check if potential days are valid (1-31)
+                    if (monthOrDay1 > 31 || monthOrDay2 > 31) {
+                        return false
+                    }
+                }
+
+                // Reject product code formats like "296-01"
+                if (dateStr.matches(Regex("\\d{3}-\\d{2}"))) {
+                    return false
+                }
+
                 return true
             }
         } catch (e: Exception) {

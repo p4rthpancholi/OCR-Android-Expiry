@@ -20,8 +20,8 @@ object WeightExtractor {
         val patterns = mutableListOf<Pattern>()
 
         try {
-            // Weight in pounds (lb, lbs) - examples: 1.25 lb, 2 lbs, 0.5lb
-            patterns.add(Pattern.compile("(\\d+\\.?\\d*)\\s*(?:lb|lbs|pound|pounds)\\b", Pattern.CASE_INSENSITIVE))
+            // Weight in pounds (lb, lbs) - examples: 1.25 lb, 2 lbs, 0.5lb - need to still add `|b`
+            patterns.add(Pattern.compile("(\\d+\\.?\\d*)\\s*(?:lb|ib|lbs|1b|pound|pounds)\\b", Pattern.CASE_INSENSITIVE))
 
             // Weight in kilograms (kg) - examples: 1.5 kg, 0.25kg
             patterns.add(Pattern.compile("(\\d+\\.?\\d*)\\s*(?:kg|kgs|kilogram|kilograms)\\b", Pattern.CASE_INSENSITIVE))
@@ -33,15 +33,15 @@ object WeightExtractor {
             patterns.add(Pattern.compile("(\\d+\\.?\\d*)\\s*(?:-)?(?:oz|ounce|ounces)\\b", Pattern.CASE_INSENSITIVE))
 
             // Weight with NET WT prefix - examples: NET WT 16 OZ, Net Wt. 1.5 LB
-            patterns.add(Pattern.compile("(?:net\\s+wt|net\\s+weight)[.:]?\\s*(\\d+\\.?\\d*)\\s*(?:oz|ounce|ounces|lb|lbs|g|gram|grams|kg)\\b",
+            patterns.add(Pattern.compile("(?:net\\s+wt|net\\s+weight)[.:]?\\s*(\\d+\\.?\\d*)\\s*(?:oz|ounce|ounces|lb|ib|lbs|1b|g|gram|grams|kg)\\b",
                 Pattern.CASE_INSENSITIVE))
 
             // Generic numerical with units (for cases not covered above)
-            patterns.add(Pattern.compile("(?:weight|wt|net)[.:]?\\s*(\\d+\\.?\\d*)\\s*(?:oz|ounce|ounces|lb|lbs|g|gram|grams|kg)\\b",
+            patterns.add(Pattern.compile("(?:weight|wt|net)[.:]?\\s*(\\d+\\.?\\d*)\\s*(?:oz|ounce|ounces|lb|ib|lbs|1b|g|gram|grams|kg)\\b",
                 Pattern.CASE_INSENSITIVE))
 
             // Specific format found in many labels - examples: 1.19 lb
-            patterns.add(Pattern.compile("(?:^|\\s)(\\d+\\.\\d+)\\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|g|gram|grams|kg)\\b",
+            patterns.add(Pattern.compile("(?:^|\\s)(\\d+\\.\\d+)\\s*(?:lb|ib|lbs|1b|pound|pounds|oz|ounce|ounces|g|gram|grams|kg)\\b",
                 Pattern.CASE_INSENSITIVE))
         } catch (e: PatternSyntaxException) {
             Log.e(TAG, "Error compiling weight patterns", e)
