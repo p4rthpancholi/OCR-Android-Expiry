@@ -1321,6 +1321,7 @@ color background_floating_material_light
 color background_material_dark
 color background_material_light
 color black
+color blue
 color bright_foreground_disabled_material_dark
 color bright_foreground_disabled_material_light
 color bright_foreground_inverse_material_dark
@@ -1390,6 +1391,7 @@ color error_color_material_dark
 color error_color_material_light
 color foreground_material_dark
 color foreground_material_light
+color gray
 color green
 color highlighted_text_material_dark
 color highlighted_text_material_light
@@ -1881,7 +1883,7 @@ color mtrl_textinput_focused_box_stroke_color
 color mtrl_textinput_hovered_box_stroke_color
 color notification_action_color_filter
 color notification_icon_bg_color
-color overlay_color
+color orange
 color primary_dark_material_dark
 color primary_dark_material_light
 color primary_material_dark
@@ -2725,6 +2727,7 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable scanner_overlay
 drawable test_level_drawable
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
@@ -2776,8 +2779,10 @@ id accessibility_custom_action_6
 id accessibility_custom_action_7
 id accessibility_custom_action_8
 id accessibility_custom_action_9
+id actionCameraFragmentToResultFragment
 id actionDown
 id actionDownUp
+id actionResultFragmentToCameraFragment
 id actionUp
 id action_bar
 id action_bar_activity_content
@@ -2786,7 +2791,6 @@ id action_bar_root
 id action_bar_spinner
 id action_bar_subtitle
 id action_bar_title
-id action_cameraFragment_to_resultFragment
 id action_container
 id action_context_bar
 id action_divider
@@ -2796,7 +2800,6 @@ id action_menu_presenter
 id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
-id action_resultFragment_to_cameraFragment
 id action_text
 id actions
 id activity_chooser_view_content
@@ -2832,6 +2835,7 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id buttonPanel
+id buttonsLayout
 id cache_measures
 id callMeasure
 id cameraFragment
@@ -2886,6 +2890,8 @@ id design_menu_item_action_area
 id design_menu_item_action_area_stub
 id design_menu_item_text
 id design_navigation_view
+id detectedTextCard
+id detectedTextLabel
 id detectedTextView
 id dialog_button
 id dimensions
@@ -2918,6 +2924,8 @@ id enterAlwaysCollapsed
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
+id expiryDateCard
+id expiryDateLabel
 id expiryDateText
 id fade
 id fill
@@ -2937,6 +2945,7 @@ id flip
 id floating
 id forever
 id fragment_container_view_tag
+id freshnessInfo
 id frost
 id fullscreen_header
 id ghost_view
@@ -3096,6 +3105,7 @@ id radio
 id ratio
 id rectangles
 id resultFragment
+id resultTitleText
 id reverseSawtooth
 id right
 id rightToLeft
@@ -3109,7 +3119,6 @@ id save_overlay_view
 id sawtooth
 id scale
 id scanAgainButton
-id scanBox
 id screen
 id scroll
 id scrollIndicatorDown
@@ -3202,8 +3211,6 @@ id textinput_suffix_text
 id time
 id title
 id titleDividerNoCustom
-id titleExpiry
-id titleOcrText
 id title_template
 id toggle
 id top
@@ -3232,6 +3239,9 @@ id view_tree_saved_state_registry_owner
 id view_tree_view_model_store_owner
 id visible
 id visible_removing_fragment_view_tag
+id weightCard
+id weightLabel
+id weightText
 id west
 id wide
 id withText
@@ -3508,11 +3518,14 @@ string common_google_play_services_wear_update_text
 string common_open_on_phone
 string common_signin_button_text
 string common_signin_button_text_long
+string detected_date
 string detected_text
+string detected_text_label
 string error_a11y_label
 string error_camera_init
 string error_icon_content_description
 string error_ocr_process
+string expiry_date_label
 string expiry_date_result
 string exposed_dropdown_menu_content_description
 string fab_transformation_scrim_behavior
@@ -3612,16 +3625,23 @@ string mtrl_timepicker_confirm
 string nav_app_bar_navigate_up_description
 string nav_app_bar_open_drawer_description
 string no_expiry_found
+string no_weight_found
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
+string pause_scanning
 string permission_rationale
+string point_camera
 string processing
+string resume_scanning
 string scan_again
+string scanning
+string scanning_paused
 string search_menu_title
 string status_bar_notification_info_overflow
+string weight_label
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

@@ -41,14 +41,11 @@ public final class FragmentCameraBinding implements ViewBinding {
   public final ProgressBar progressBar;
 
   @NonNull
-  public final View scanBox;
-
-  @NonNull
   public final PreviewView viewFinder;
 
   private FragmentCameraBinding(@NonNull ConstraintLayout rootView, @NonNull Button captureButton,
       @NonNull Button grantPermissionButton, @NonNull TextView helpText, @NonNull View overlay,
-      @NonNull TextView processingText, @NonNull ProgressBar progressBar, @NonNull View scanBox,
+      @NonNull TextView processingText, @NonNull ProgressBar progressBar,
       @NonNull PreviewView viewFinder) {
     this.rootView = rootView;
     this.captureButton = captureButton;
@@ -57,7 +54,6 @@ public final class FragmentCameraBinding implements ViewBinding {
     this.overlay = overlay;
     this.processingText = processingText;
     this.progressBar = progressBar;
-    this.scanBox = scanBox;
     this.viewFinder = viewFinder;
   }
 
@@ -124,12 +120,6 @@ public final class FragmentCameraBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.scanBox;
-      View scanBox = ViewBindings.findChildViewById(rootView, id);
-      if (scanBox == null) {
-        break missingId;
-      }
-
       id = R.id.viewFinder;
       PreviewView viewFinder = ViewBindings.findChildViewById(rootView, id);
       if (viewFinder == null) {
@@ -137,8 +127,7 @@ public final class FragmentCameraBinding implements ViewBinding {
       }
 
       return new FragmentCameraBinding((ConstraintLayout) rootView, captureButton,
-          grantPermissionButton, helpText, overlay, processingText, progressBar, scanBox,
-          viewFinder);
+          grantPermissionButton, helpText, overlay, processingText, progressBar, viewFinder);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -9,12 +9,14 @@ import kotlin.jvm.JvmStatic
 
 public data class ResultFragmentArgs(
   public val detectedText: String,
-  public val expiryDate: String
+  public val expiryDate: String,
+  public val weight: String
 ) : NavArgs {
   public fun toBundle(): Bundle {
     val result = Bundle()
     result.putString("detectedText", this.detectedText)
     result.putString("expiryDate", this.expiryDate)
+    result.putString("weight", this.weight)
     return result
   }
 
@@ -22,6 +24,7 @@ public data class ResultFragmentArgs(
     val result = SavedStateHandle()
     result.set("detectedText", this.detectedText)
     result.set("expiryDate", this.expiryDate)
+    result.set("weight", this.weight)
     return result
   }
 
@@ -47,7 +50,16 @@ public data class ResultFragmentArgs(
       } else {
         throw IllegalArgumentException("Required argument \"expiryDate\" is missing and does not have an android:defaultValue")
       }
-      return ResultFragmentArgs(__detectedText, __expiryDate)
+      val __weight : String?
+      if (bundle.containsKey("weight")) {
+        __weight = bundle.getString("weight")
+        if (__weight == null) {
+          throw IllegalArgumentException("Argument \"weight\" is marked as non-null but was passed a null value.")
+        }
+      } else {
+        throw IllegalArgumentException("Required argument \"weight\" is missing and does not have an android:defaultValue")
+      }
+      return ResultFragmentArgs(__detectedText, __expiryDate, __weight)
     }
 
     @JvmStatic
@@ -70,7 +82,16 @@ public data class ResultFragmentArgs(
       } else {
         throw IllegalArgumentException("Required argument \"expiryDate\" is missing and does not have an android:defaultValue")
       }
-      return ResultFragmentArgs(__detectedText, __expiryDate)
+      val __weight : String?
+      if (savedStateHandle.contains("weight")) {
+        __weight = savedStateHandle["weight"]
+        if (__weight == null) {
+          throw IllegalArgumentException("Argument \"weight\" is marked as non-null but was passed a null value")
+        }
+      } else {
+        throw IllegalArgumentException("Required argument \"weight\" is missing and does not have an android:defaultValue")
+      }
+      return ResultFragmentArgs(__detectedText, __expiryDate, __weight)
     }
   }
 }

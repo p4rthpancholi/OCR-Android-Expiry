@@ -8,15 +8,15 @@ import androidx.core.content.ContextCompat
 import com.example.expirydetector.R
 
 /**
- * Utility class for permission-related operations.
+ * Utility class for handling permissions in the app.
  */
 object PermissionUtils {
-    
+
     /**
-     * Check if the camera permission is granted.
-     * 
-     * @param context The context
-     * @return true if camera permission is granted, false otherwise
+     * Checks if the app has camera permission.
+     *
+     * @param context The application context
+     * @return True if camera permission is granted, false otherwise
      */
     fun hasCameraPermission(context: Context): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -24,19 +24,23 @@ object PermissionUtils {
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
-    
+
     /**
-     * Shows a rationale dialog explaining why the permission is needed.
-     * 
-     * @param context The context
-     * @param onPositiveClick Callback to be invoked when the user clicks the positive button
+     * Shows a rationale dialog explaining why the app needs camera permission.
+     *
+     * @param context The application context
+     * @param onRequestPermission Callback to be called when user agrees to request permission
      */
-    fun showPermissionRationale(context: Context, onPositiveClick: () -> Unit) {
+    fun showPermissionRationale(context: Context, onRequestPermission: () -> Unit) {
         AlertDialog.Builder(context)
-            .setTitle(R.string.camera_permission_required)
-            .setMessage(R.string.permission_rationale)
-            .setPositiveButton(android.R.string.ok) { _, _ -> onPositiveClick() }
-            .setNegativeButton(android.R.string.cancel, null)
+            .setTitle("Camera Permission Required")
+            .setMessage(context.getString(R.string.camera_permission_required))
+            .setPositiveButton("Grant") { _, _ ->
+                onRequestPermission()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
             .create()
             .show()
     }

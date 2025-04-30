@@ -77,59 +77,59 @@
 45        </activity>
 46
 47        <service
-47-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:9:9-15:19
+47-->[com.google.android.gms:play-services-mlkit-text-recognition-common:19.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0588ec3d9c0024696e8c25771a62a94b/transformed/jetified-play-services-mlkit-text-recognition-common-19.1.0/AndroidManifest.xml:9:9-15:19
 48            android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
-48-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:10:13-91
+48-->[com.google.android.gms:play-services-mlkit-text-recognition-common:19.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0588ec3d9c0024696e8c25771a62a94b/transformed/jetified-play-services-mlkit-text-recognition-common-19.1.0/AndroidManifest.xml:10:13-91
 49            android:directBootAware="true"
-49-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:17:13-43
+49-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:17:13-43
 50            android:exported="false" >
-50-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:11:13-37
+50-->[com.google.android.gms:play-services-mlkit-text-recognition-common:19.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0588ec3d9c0024696e8c25771a62a94b/transformed/jetified-play-services-mlkit-text-recognition-common-19.1.0/AndroidManifest.xml:11:13-37
 51            <meta-data
-51-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:12:13-14:85
+51-->[com.google.android.gms:play-services-mlkit-text-recognition-common:19.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0588ec3d9c0024696e8c25771a62a94b/transformed/jetified-play-services-mlkit-text-recognition-common-19.1.0/AndroidManifest.xml:12:13-14:85
 52                android:name="com.google.firebase.components:com.google.mlkit.vision.text.internal.TextRegistrar"
-52-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:13:17-114
+52-->[com.google.android.gms:play-services-mlkit-text-recognition-common:19.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0588ec3d9c0024696e8c25771a62a94b/transformed/jetified-play-services-mlkit-text-recognition-common-19.1.0/AndroidManifest.xml:13:17-114
 53                android:value="com.google.firebase.components.ComponentRegistrar" />
-53-->[com.google.android.gms:play-services-mlkit-text-recognition-common:18.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/fe849940fc45985ce20f8fad33e5aea4/transformed/jetified-play-services-mlkit-text-recognition-common-18.0.0/AndroidManifest.xml:14:17-82
+53-->[com.google.android.gms:play-services-mlkit-text-recognition-common:19.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0588ec3d9c0024696e8c25771a62a94b/transformed/jetified-play-services-mlkit-text-recognition-common-19.1.0/AndroidManifest.xml:14:17-82
 54            <meta-data
-54-->[com.google.mlkit:vision-common:17.2.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0b163ef8eb24313863442023102dbc4c/transformed/jetified-vision-common-17.2.1/AndroidManifest.xml:12:13-14:85
+54-->[com.google.mlkit:vision-common:17.3.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/8577c3f79ec9e2f2ab22d49e6782250f/transformed/jetified-vision-common-17.3.0/AndroidManifest.xml:12:13-14:85
 55                android:name="com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar"
-55-->[com.google.mlkit:vision-common:17.2.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0b163ef8eb24313863442023102dbc4c/transformed/jetified-vision-common-17.2.1/AndroidManifest.xml:13:17-124
+55-->[com.google.mlkit:vision-common:17.3.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/8577c3f79ec9e2f2ab22d49e6782250f/transformed/jetified-vision-common-17.3.0/AndroidManifest.xml:13:17-124
 56                android:value="com.google.firebase.components.ComponentRegistrar" />
-56-->[com.google.mlkit:vision-common:17.2.1] /Users/parth.pancholi/.gradle/caches/8.10/transforms/0b163ef8eb24313863442023102dbc4c/transformed/jetified-vision-common-17.2.1/AndroidManifest.xml:14:17-82
+56-->[com.google.mlkit:vision-common:17.3.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/8577c3f79ec9e2f2ab22d49e6782250f/transformed/jetified-vision-common-17.3.0/AndroidManifest.xml:14:17-82
 57            <meta-data
-57-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:20:13-22:85
+57-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:20:13-22:85
 58                android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar"
-58-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:21:17-120
+58-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:21:17-120
 59                android:value="com.google.firebase.components.ComponentRegistrar" />
-59-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:22:17-82
+59-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:22:17-82
 60        </service>
 61
 62        <provider
-62-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:9:9-13:38
+62-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:9:9-13:38
 63            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
-63-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:10:13-78
+63-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:10:13-78
 64            android:authorities="com.example.expirydetector.mlkitinitprovider"
-64-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:11:13-69
+64-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:11:13-69
 65            android:exported="false"
-65-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:12:13-37
+65-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:12:13-37
 66            android:initOrder="99" />
-66-->[com.google.mlkit:common:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/decf7e53022a34327c772b2478ab0f7f/transformed/jetified-common-18.5.0/AndroidManifest.xml:13:13-35
+66-->[com.google.mlkit:common:18.11.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ebaa3910db31700e155578ef5285f23e/transformed/jetified-common-18.11.0/AndroidManifest.xml:13:13-35
 67
 68        <activity
-68-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:20:9-22:45
+68-->[com.google.android.gms:play-services-base:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/940b8f7a61b4916859691c3b5024c10e/transformed/jetified-play-services-base-18.5.0/AndroidManifest.xml:5:9-173
 69            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-69-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:20:19-85
+69-->[com.google.android.gms:play-services-base:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/940b8f7a61b4916859691c3b5024c10e/transformed/jetified-play-services-base-18.5.0/AndroidManifest.xml:5:19-85
 70            android:exported="false"
-70-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:22:19-43
+70-->[com.google.android.gms:play-services-base:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/940b8f7a61b4916859691c3b5024c10e/transformed/jetified-play-services-base-18.5.0/AndroidManifest.xml:5:146-170
 71            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-71-->[com.google.android.gms:play-services-base:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/515810a84c7a3c9f5675e7cb779e386d/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:21:19-78
+71-->[com.google.android.gms:play-services-base:18.5.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/940b8f7a61b4916859691c3b5024c10e/transformed/jetified-play-services-base-18.5.0/AndroidManifest.xml:5:86-145
 72
 73        <meta-data
-73-->[com.google.android.gms:play-services-basement:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/950c4c97c72dd798d9fabad5c322bfd2/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:21:9-23:69
+73-->[com.google.android.gms:play-services-basement:18.4.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/43283ff4753c844ec27dcd577b442b29/transformed/jetified-play-services-basement-18.4.0/AndroidManifest.xml:6:9-122
 74            android:name="com.google.android.gms.version"
-74-->[com.google.android.gms:play-services-basement:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/950c4c97c72dd798d9fabad5c322bfd2/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:22:13-58
+74-->[com.google.android.gms:play-services-basement:18.4.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/43283ff4753c844ec27dcd577b442b29/transformed/jetified-play-services-basement-18.4.0/AndroidManifest.xml:6:20-65
 75            android:value="@integer/google_play_services_version" />
-75-->[com.google.android.gms:play-services-basement:18.1.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/950c4c97c72dd798d9fabad5c322bfd2/transformed/jetified-play-services-basement-18.1.0/AndroidManifest.xml:23:13-66
+75-->[com.google.android.gms:play-services-basement:18.4.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/43283ff4753c844ec27dcd577b442b29/transformed/jetified-play-services-basement-18.4.0/AndroidManifest.xml:6:66-119
 76
 77        <uses-library
 77-->[androidx.window:window:1.0.0] /Users/parth.pancholi/.gradle/caches/8.10/transforms/ceb65bc28ffdb1b6cebdfe56666c2e47/transformed/jetified-window-1.0.0/AndroidManifest.xml:25:9-27:40

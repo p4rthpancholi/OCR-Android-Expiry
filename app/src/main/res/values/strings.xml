@@ -4,13 +4,23 @@
     <string name="permission_rationale">This app needs camera access to scan product labels for expiration dates.</string>
     <string name="error_camera_init">Could not initialize camera. Please restart the app.</string>
     <string name="error_ocr_process">Failed to process the image. Please try again.</string>
+    <string name="detected_text_label">Detected Text:</string>
     <string name="no_expiry_found">No expiration date detected. Try again or adjust the camera position.</string>
     <string name="capture_button">Capture</string>
     <string name="expiry_date_result">Expiration Date: %1$s</string>
+    <string name="expiry_date_label">Expiration Date:</string>
     <string name="scan_again">Scan Another</string>
     <string name="processing">Processing...</string>
     <string name="detected_text">Detected Text:</string>
     <string name="analyzing_image">Analyzing image...</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="help_text">Position the product expiration date within the frame</string>
+    <string name="point_camera">Point camera at expiration date</string>
+    <string name="scanning">Scanning...</string>
+    <string name="pause_scanning">Pause Scanning</string>
+    <string name="resume_scanning">Resume Scanning</string>
+    <string name="scanning_paused">Scanning Paused</string>
+    <string name="detected_date">Detected: %1$s</string>
+    <string name="weight_label">Product Weight:</string>
+    <string name="no_weight_found">No weight information found</string>
 </resources>

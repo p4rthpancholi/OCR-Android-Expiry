@@ -59,7 +59,7 @@ dependencies {
     implementation "androidx.camera:camera-view:${camerax_version}"
 
     // Google ML Kit
-    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:18.0.2'
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.1'
     
     // Navigation Component
     def nav_version = "2.5.3"

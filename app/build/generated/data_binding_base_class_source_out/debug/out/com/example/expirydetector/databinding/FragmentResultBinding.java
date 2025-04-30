@@ -5,10 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
@@ -22,34 +23,65 @@ public final class FragmentResultBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
+  public final LinearLayout buttonsLayout;
+
+  @NonNull
+  public final CardView detectedTextCard;
+
+  @NonNull
+  public final TextView detectedTextLabel;
+
+  @NonNull
   public final TextView detectedTextView;
+
+  @NonNull
+  public final CardView expiryDateCard;
+
+  @NonNull
+  public final TextView expiryDateLabel;
 
   @NonNull
   public final TextView expiryDateText;
 
   @NonNull
+  public final TextView freshnessInfo;
+
+  @NonNull
+  public final TextView resultTitleText;
+
+  @NonNull
   public final Button scanAgainButton;
 
   @NonNull
-  public final ScrollView scrollView;
+  public final CardView weightCard;
 
   @NonNull
-  public final TextView titleExpiry;
+  public final TextView weightLabel;
 
   @NonNull
-  public final TextView titleOcrText;
+  public final TextView weightText;
 
   private FragmentResultBinding(@NonNull ConstraintLayout rootView,
-      @NonNull TextView detectedTextView, @NonNull TextView expiryDateText,
-      @NonNull Button scanAgainButton, @NonNull ScrollView scrollView,
-      @NonNull TextView titleExpiry, @NonNull TextView titleOcrText) {
+      @NonNull LinearLayout buttonsLayout, @NonNull CardView detectedTextCard,
+      @NonNull TextView detectedTextLabel, @NonNull TextView detectedTextView,
+      @NonNull CardView expiryDateCard, @NonNull TextView expiryDateLabel,
+      @NonNull TextView expiryDateText, @NonNull TextView freshnessInfo,
+      @NonNull TextView resultTitleText, @NonNull Button scanAgainButton,
+      @NonNull CardView weightCard, @NonNull TextView weightLabel, @NonNull TextView weightText) {
     this.rootView = rootView;
+    this.buttonsLayout = buttonsLayout;
+    this.detectedTextCard = detectedTextCard;
+    this.detectedTextLabel = detectedTextLabel;
     this.detectedTextView = detectedTextView;
+    this.expiryDateCard = expiryDateCard;
+    this.expiryDateLabel = expiryDateLabel;
     this.expiryDateText = expiryDateText;
+    this.freshnessInfo = freshnessInfo;
+    this.resultTitleText = resultTitleText;
     this.scanAgainButton = scanAgainButton;
-    this.scrollView = scrollView;
-    this.titleExpiry = titleExpiry;
-    this.titleOcrText = titleOcrText;
+    this.weightCard = weightCard;
+    this.weightLabel = weightLabel;
+    this.weightText = weightText;
   }
 
   @Override
@@ -79,9 +111,39 @@ public final class FragmentResultBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.buttonsLayout;
+      LinearLayout buttonsLayout = ViewBindings.findChildViewById(rootView, id);
+      if (buttonsLayout == null) {
+        break missingId;
+      }
+
+      id = R.id.detectedTextCard;
+      CardView detectedTextCard = ViewBindings.findChildViewById(rootView, id);
+      if (detectedTextCard == null) {
+        break missingId;
+      }
+
+      id = R.id.detectedTextLabel;
+      TextView detectedTextLabel = ViewBindings.findChildViewById(rootView, id);
+      if (detectedTextLabel == null) {
+        break missingId;
+      }
+
       id = R.id.detectedTextView;
       TextView detectedTextView = ViewBindings.findChildViewById(rootView, id);
       if (detectedTextView == null) {
+        break missingId;
+      }
+
+      id = R.id.expiryDateCard;
+      CardView expiryDateCard = ViewBindings.findChildViewById(rootView, id);
+      if (expiryDateCard == null) {
+        break missingId;
+      }
+
+      id = R.id.expiryDateLabel;
+      TextView expiryDateLabel = ViewBindings.findChildViewById(rootView, id);
+      if (expiryDateLabel == null) {
         break missingId;
       }
 
@@ -91,32 +153,45 @@ public final class FragmentResultBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.freshnessInfo;
+      TextView freshnessInfo = ViewBindings.findChildViewById(rootView, id);
+      if (freshnessInfo == null) {
+        break missingId;
+      }
+
+      id = R.id.resultTitleText;
+      TextView resultTitleText = ViewBindings.findChildViewById(rootView, id);
+      if (resultTitleText == null) {
+        break missingId;
+      }
+
       id = R.id.scanAgainButton;
       Button scanAgainButton = ViewBindings.findChildViewById(rootView, id);
       if (scanAgainButton == null) {
         break missingId;
       }
 
-      id = R.id.scrollView;
-      ScrollView scrollView = ViewBindings.findChildViewById(rootView, id);
-      if (scrollView == null) {
+      id = R.id.weightCard;
+      CardView weightCard = ViewBindings.findChildViewById(rootView, id);
+      if (weightCard == null) {
         break missingId;
       }
 
-      id = R.id.titleExpiry;
-      TextView titleExpiry = ViewBindings.findChildViewById(rootView, id);
-      if (titleExpiry == null) {
+      id = R.id.weightLabel;
+      TextView weightLabel = ViewBindings.findChildViewById(rootView, id);
+      if (weightLabel == null) {
         break missingId;
       }
 
-      id = R.id.titleOcrText;
-      TextView titleOcrText = ViewBindings.findChildViewById(rootView, id);
-      if (titleOcrText == null) {
+      id = R.id.weightText;
+      TextView weightText = ViewBindings.findChildViewById(rootView, id);
+      if (weightText == null) {
         break missingId;
       }
 
-      return new FragmentResultBinding((ConstraintLayout) rootView, detectedTextView,
-          expiryDateText, scanAgainButton, scrollView, titleExpiry, titleOcrText);
+      return new FragmentResultBinding((ConstraintLayout) rootView, buttonsLayout, detectedTextCard,
+          detectedTextLabel, detectedTextView, expiryDateCard, expiryDateLabel, expiryDateText,
+          freshnessInfo, resultTitleText, scanAgainButton, weightCard, weightLabel, weightText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
