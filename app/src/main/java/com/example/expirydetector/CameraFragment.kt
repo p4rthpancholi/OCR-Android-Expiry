@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.expirydetector.databinding.FragmentCameraBinding
-import com.example.expirydetector.utils.DateExtractor
+import com.example.expirydetector.utils.DateExtractorV2
 import com.example.expirydetector.utils.PermissionUtils
 import com.example.expirydetector.utils.WeightExtractor
 import com.google.mlkit.vision.common.InputImage
@@ -342,7 +342,7 @@ class CameraFragment : Fragment() {
         try {
             val result = recognizer.process(image).await()
             val extractedText = result.text
-            val expiryDate = DateExtractor.extractExpiryDate(extractedText)
+            val expiryDate = DateExtractorV2.extractExpiryDate(extractedText)
             val weight = WeightExtractor.extractWeight(extractedText)
 
             Triple(extractedText, expiryDate, weight)

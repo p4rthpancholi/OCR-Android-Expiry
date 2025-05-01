@@ -22,6 +22,9 @@ class ResultFragment : Fragment() {
     private val args: ResultFragmentArgs by navArgs()
     private val TAG = "ResultFragment"
 
+    // Date formatter for formatting dates in the UI
+    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -205,7 +208,7 @@ class ResultFragment : Fragment() {
                     val month = getMonthNumber(parts[1])
                     var year = parts[2].toIntOrNull() ?: return null
 
-                    // Adjust 2-digit year (assume 20xx for years < 50, 19xx for years >= 50)
+                    // Adjust 2-digit year (assume 20xx for years < 50, 19xx for years ≥ 50)
                     if (year < 100) {
                         year += if (year < 50) 2000 else 1900
                     }

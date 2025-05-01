@@ -14,6 +14,74 @@ import java.util.regex.PatternSyntaxException
 object DateExtractor {
     private const val TAG = "DateExtractor"
 
+    // Cache for successful date extractions to prevent "flickering" dates
+    private var lastSuccessfulExtraction: String = ""
+    private var lastExtractionTimestamp: Long = 0
+    private const val EXTRACTION_CACHE_DURATION = 5000 // 5 seconds
+
+    // Confidence tracking for stable date selection
+    private val confidenceHistory = mutableMapOf<String, Int>()
+    private const val CONFIDENCE_THRESHOLD = 3  // Number of consecutive detections needed to switch dates
+    private const val CONFIDENCE_MAX = 10       // Maximum confidence to prevent unbounded growth
+
+    /**
+     * Updates the last successful extraction cache with a new date.
+     * Manages confidence tracking to ensure stable date selection.
+     */
+    private fun updateDateConfidenceCache(date: String) {
+        val currentTime = System.currentTimeMillis()
+
+        // Reset confidence for competing dates
+        if (date != lastSuccessfulExtraction) {
+            // Increase confidence for this date
+            val currentConfidence = confidenceHistory.getOrDefault(date, 0)
+            confidenceHistory[date] = minOf(currentConfidence + 1, CONFIDENCE_MAX)
+
+            // Decrease confidence for previous date
+            if (lastSuccessfulExtraction.isNotBlank()) {
+                val prevConfidence = confidenceHistory.getOrDefault(lastSuccessfulExtraction, 0)
+                if (prevConfidence > 0) {
+                    confidenceHistory[lastSuccessfulExtraction] = prevConfidence - 1
+                }
+            }
+
+            // Only switch the date if we have sufficient confidence in the new date
+            if (confidenceHistory.getOrDefault(date, 0) >= CONFIDENCE_THRESHOLD) {
+                Log.d(TAG, "Switching date from '$lastSuccessfulExtraction' to '$date' with confidence ${confidenceHistory[date]}")
+                lastSuccessfulExtraction = date
+                lastExtractionTimestamp = currentTime
+            } else {
+                Log.d(TAG, "Detected new date '$date' but keeping '$lastSuccessfulExtraction' until confidence threshold reached " +
+                        "(current: ${confidenceHistory.getOrDefault(date, 0)}/$CONFIDENCE_THRESHOLD)")
+            }
+        } else {
+            // Same date as before, reinforce confidence
+            val currentConfidence = confidenceHistory.getOrDefault(date, 0)
+            confidenceHistory[date] = minOf(currentConfidence + 1, CONFIDENCE_MAX)
+            lastExtractionTimestamp = currentTime
+        }
+
+        // Cleanup old entries to prevent memory leaks
+        if (confidenceHistory.size > 5) {
+            val keysToRemove = confidenceHistory.filter { it.value == 0 }.keys
+            keysToRemove.forEach { confidenceHistory.remove(it) }
+        }
+    }
+
+    /**
+     * Gets the fallback date from cache if available and not expired
+     */
+    private fun getFallbackDate(): String {
+        val currentTime = System.currentTimeMillis()
+        val timeSinceLastExtraction = currentTime - lastExtractionTimestamp
+
+        if (lastSuccessfulExtraction.isNotBlank() && timeSinceLastExtraction < EXTRACTION_CACHE_DURATION) {
+            return lastSuccessfulExtraction
+        }
+
+        return ""
+    }
+
     // Month abbreviations and full names
     private val months = listOf(
         "jan", "january",
@@ -163,7 +231,7 @@ object DateExtractor {
         "BEST BEFORE", "BEST BY", "BB", "BBE", "BEST BEFORE END",
 
         // Use by indicators
-        "USE BY", "USE BEFORE", "USE OR FREEZE BY",
+        "USE BY", "USE BEFORE", "USE OR FREEZE BY", "USE OR FREEZE",
 
         // Sell by indicators
         "SELL BY", "SELL THRU", "SELL THROUGH", "SELL UNTIL", "SB", "SBD",
@@ -193,7 +261,14 @@ object DateExtractor {
         "PRICE", "TOTAL PRICE", "REG PRICE", "SALE PRICE", "UNIT PRICE",
         "NEW PRICE", "COST", "TOTAL COST", "YOU SAVE", "SAVE",
         "$", "$/LB", "$/KG", "/LB", "/KG",
-        "PLU", "UPC", "SKU", "NET WT", "WEIGHT"
+        "PLU", "UPC", "SKU"
+    )
+
+    // Weight related terms to help identify weight values
+    private val weightTerms = listOf(
+        "NET WT", "NET WT.", "NET WEIGHT", "NET WT LBS", "NET WT. LBS",
+        "WEIGHT", "NET", "WT", "LBS", "LB", "KG", "G", "OZ",
+        "TARE", "NET WT/CT", "GRAMS", "OUNCES", "POUNDS"
     )
 
     // Product code related terms to avoid
@@ -242,9 +317,14 @@ object DateExtractor {
      * @return The extracted expiration date as a string, or empty string if none found
      */
     fun extractExpiryDate(text: String): String {
-        if (text.isBlank()) return ""
+        if (text.isBlank()) {
+            // If no text provided, use cached date if available
+            return getFallbackDate()
+        }
 
         try {
+            Log.d(TAG, "Starting date extraction on text: ${text.take(100)}...")
+
             // Store all date candidates with their weights
             val dateCandidates = mutableListOf<DateCandidate>()
 
@@ -270,6 +350,167 @@ object DateExtractor {
                     } else {
                         // Even if we couldn't parse it, it's still a high-confidence date
                         dateCandidates.add(DateCandidate(dateStr, weight, null))
+                    }
+                }
+            }
+
+            // Look for "USE OR FREEZE BY:" pattern (common in poultry labels)
+            val useOrFreezeByPattern = Pattern.compile("(?i)USE\\s+OR\\s+FREEZE\\s+BY\\s*:?\\s*([0-9]{1,2}[/\\-\\.][0-9]{1,2}[/\\-\\.][0-9]{2,4})")
+            val useOrFreezeMatcher = useOrFreezeByPattern.matcher(text)
+            if (useOrFreezeMatcher.find()) {
+                val dateStr = useOrFreezeMatcher.group(1)
+                if (dateStr != null) {
+                    var weight = DateWeight.EXPIRY_MARKER + 20.0 // Even higher weight than sell-by
+                    val parsedDate = safeParseDate(dateStr)
+
+                    if (parsedDate != null) {
+                        // If this date is in the future, give it even more weight
+                        val currentDate = Calendar.getInstance().time
+                        if (parsedDate.after(currentDate)) {
+                            weight += DateWeight.FUTURE_DATE
+                        }
+
+                        dateCandidates.add(DateCandidate(dateStr, weight, parsedDate))
+                        Log.d(TAG, "Found high-confidence USE OR FREEZE BY date: $dateStr with weight $weight")
+                    } else {
+                        // Even if we couldn't parse it, it's still a high-confidence date
+                        dateCandidates.add(DateCandidate(dateStr, weight, null))
+                    }
+                }
+            }
+
+            // Special handling for chicken label pattern "USE OR FREEZE BY:" followed by MM/DD/YY on next line
+            val textLines = text.split("\n")
+            for (i in 0 until textLines.size - 1) {
+                val line = textLines[i].trim()
+                val nextLine = textLines[i+1].trim()
+
+                if (line.uppercase(Locale.getDefault()).contains("USE OR FREEZE BY")) {
+                    // Check if next line contains a date in MM/DD/YY format
+                    val datePattern = Pattern.compile("([0-9]{1,2}[/\\-\\.][0-9]{1,2}[/\\-\\.][0-9]{2,4})")
+                    val dateMatcher = datePattern.matcher(nextLine)
+
+                    if (dateMatcher.find()) {
+                        val dateStr = dateMatcher.group(1)
+                        if (dateStr != null) {
+                            var weight = DateWeight.EXPIRY_MARKER + 25.0 // Highest confidence
+                            val parsedDate = safeParseDate(dateStr)
+
+                            if (parsedDate != null) {
+                                dateCandidates.add(DateCandidate(dateStr, weight, parsedDate))
+                                Log.d(TAG, "Found USE OR FREEZE BY date on next line: $dateStr with weight $weight")
+                            } else {
+                                dateCandidates.add(DateCandidate(dateStr, weight, null))
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Special handling for grocery format with "Sell Thru" and abbreviated month with dot notation: "Apr. 29.25"
+            for (i in 0 until textLines.size - 1) {
+                val line = textLines[i].trim().lowercase(Locale.getDefault())
+                val nextLine = textLines[i+1].trim()
+
+                if (line.contains("sell thru")) {
+                    // Check for common abbreviated month format on next line: "Apr. 29.25" or similar
+                    val abbrMonthPattern = Pattern.compile("(?i)([A-Za-z]{3})\\s*\\.?\\s+(\\d{1,2})\\s*\\.\\s*(\\d{1,2})")
+                    val abbrMonthMatcher = abbrMonthPattern.matcher(nextLine)
+
+                    if (abbrMonthMatcher.find()) {
+                        val monthStr = abbrMonthMatcher.group(1)
+                        val dayStr = abbrMonthMatcher.group(2)
+                        val yearPart = abbrMonthMatcher.group(3)
+
+                        if (monthStr != null && dayStr != null && yearPart != null) {
+                            // Format the date string in a standard way
+                            val formattedDate = "$monthStr $dayStr, 20$yearPart"
+                            Log.d(TAG, "Found abbreviated month format after Sell Thru: $formattedDate")
+
+                            var weight = DateWeight.EXPIRY_MARKER + 30.0 // Very high confidence
+                            val parsedDate = safeParseDate(formattedDate)
+
+                            if (parsedDate != null) {
+                                dateCandidates.add(DateCandidate(formattedDate, weight, parsedDate))
+                                Log.d(TAG, "Successfully parsed abbreviated month format: $formattedDate -> $parsedDate")
+                            } else {
+                                // Try alternative parsing by converting month abbreviation
+                                try {
+                                    val monthNum = monthNameToNumber(monthStr)
+                                    val day = dayStr.toInt()
+                                    val year = 2000 + yearPart.toInt()
+
+                                    val calendar = Calendar.getInstance()
+                                    calendar.set(year, monthNum - 1, day)
+
+                                    dateCandidates.add(DateCandidate(formattedDate, weight, calendar.time))
+                                    Log.d(TAG, "Parsed abbreviated month with calendar: $monthStr $dayStr, $yearPart -> ${calendar.time}")
+                                } catch (e: Exception) {
+                                    // Still add as a candidate even if parsing fails
+                                    dateCandidates.add(DateCandidate(formattedDate, weight, null))
+                                    Log.e(TAG, "Could not parse abbreviated month format: $formattedDate", e)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check for abbreviated month format directly in the text (not just after Sell Thru)
+            val abbrMonthGlobalPattern = Pattern.compile("(?i)([A-Za-z]{3})\\s*\\.?\\s+(\\d{1,2})\\s*\\.\\s*(\\d{1,2})")
+            val abbrMonthGlobalMatcher = abbrMonthGlobalPattern.matcher(text)
+
+            while (abbrMonthGlobalMatcher.find()) {
+                val monthStr = abbrMonthGlobalMatcher.group(1)
+                val dayStr = abbrMonthGlobalMatcher.group(2)
+                val yearPart = abbrMonthGlobalMatcher.group(3)
+
+                if (monthStr != null && dayStr != null && yearPart != null) {
+                    // Format the date string in a standard way
+                    val formattedDate = "$monthStr $dayStr, 20$yearPart"
+                    Log.d(TAG, "Found general abbreviated month format: $formattedDate")
+
+                    // Context check - if it's in a line with "Sell Thru", "Best Before", etc. it gets higher weight
+                    val position = abbrMonthGlobalMatcher.start()
+                    val lineStart = maxOf(0, text.lastIndexOf('\n', position) + 1)
+                    val lineEnd = minOf(text.length, text.indexOf('\n', position).let { if (it == -1) text.length else it })
+                    val line = text.substring(lineStart, lineEnd).lowercase(Locale.getDefault())
+
+                    var weight = DateWeight.STANDARD_DATE_FORMAT + DateWeight.HAS_YEAR_COMPONENT
+
+                    // Increase weight if it's on a line with expiry markers
+                    if (line.contains("sell thru") || line.contains("sell by") ||
+                        line.contains("use by") || line.contains("best before")) {
+                        weight += DateWeight.EXPIRY_MARKER
+                    }
+
+                    val parsedDate = safeParseDate(formattedDate)
+
+                    if (parsedDate != null) {
+                        // If date is in future, increase weight
+                        val currentDate = Calendar.getInstance().time
+                        if (parsedDate.after(currentDate)) {
+                            weight += DateWeight.FUTURE_DATE
+                        }
+
+                        dateCandidates.add(DateCandidate(formattedDate, weight, parsedDate))
+                        Log.d(TAG, "Parsed general abbreviated month format: $formattedDate -> $parsedDate with weight $weight")
+                    } else {
+                        // Try alternative parsing
+                        try {
+                            val monthNum = monthNameToNumber(monthStr)
+                            val day = dayStr.toInt()
+                            val year = 2000 + yearPart.toInt()
+
+                            val calendar = Calendar.getInstance()
+                            calendar.set(year, monthNum - 1, day)
+
+                            dateCandidates.add(DateCandidate(formattedDate, weight, calendar.time))
+                            Log.d(TAG, "Parsed general abbreviated month with calendar: $monthStr $dayStr, $yearPart -> ${calendar.time}")
+                        } catch (e: Exception) {
+                            dateCandidates.add(DateCandidate(formattedDate, weight, null))
+                            Log.e(TAG, "Could not parse general abbreviated month format: $formattedDate", e)
+                        }
                     }
                 }
             }
@@ -404,8 +645,8 @@ object DateExtractor {
             }
 
             // Process line by line for contextual analysis
-            val lines = text.split("\n")
-            for (line in lines) {
+            val analysisLines = text.split("\n")
+            for (line in analysisLines) {
                 // Skip price lines and product code lines for this analysis
                 if (isPriceLine(line) || isProductCodeLine(line)) {
                     continue
@@ -516,18 +757,22 @@ object DateExtractor {
                 val positiveWeightDates = dateCandidates.filter { it.weight > 0 }
                 if (positiveWeightDates.isNotEmpty()) {
                     val highestWeighted = positiveWeightDates.maxByOrNull { it.weight }
-                    Log.d(TAG, "No clear expiry found, selected highest-weighted positive date: ${highestWeighted?.dateString}")
-                    return highestWeighted?.dateString ?: positiveWeightDates.first().dateString
+                    val selectedDate = highestWeighted?.dateString ?: positiveWeightDates.first().dateString
+                    Log.d(TAG, "No clear expiry found, selected highest-weighted positive date: $selectedDate")
+                    updateDateConfidenceCache(selectedDate)
+                    return selectedDate
                 }
 
                 // If even that fails, take the overall highest weighted
                 val highestWeighted = dateCandidates.maxByOrNull { it.weight }
-                Log.d(TAG, "No positive weight dates, selected overall highest-weighted date: ${highestWeighted?.dateString}")
-                return highestWeighted?.dateString ?: dateCandidates.first().dateString
+                val selectedDate = highestWeighted?.dateString ?: dateCandidates.first().dateString
+                Log.d(TAG, "No positive weight dates, selected overall highest-weighted date: $selectedDate")
+                updateDateConfidenceCache(selectedDate)
+                return selectedDate
             }
 
             // Last resort fallback: try to find any date-like pattern
-            for (line in lines) {
+            for (line in analysisLines) {
                 // Skip price lines and product code lines
                 if (isPriceLine(line) || isProductCodeLine(line)) {
                     continue
@@ -539,11 +784,19 @@ object DateExtractor {
                     !isProductCode(dateCandidate, line, line.indexOf(dateCandidate))) {
 
                     Log.d(TAG, "Fallback: found date-like pattern: $dateCandidate")
+                    updateDateConfidenceCache(dateCandidate)
                     return dateCandidate
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error extracting expiry date", e)
+        }
+
+        // If we couldn't extract a date, try using the cached date as fallback
+        val fallbackDate = getFallbackDate()
+        if (fallbackDate.isNotBlank()) {
+            Log.d(TAG, "Using fallback date from cache: $fallbackDate")
+            return fallbackDate
         }
 
         return ""
@@ -766,8 +1019,98 @@ object DateExtractor {
     /**
      * Checks if a date string is likely a price format
      */
+    /**
+     * Checks if a string is a potential weight value or on a weight-related line.
+     * This helps avoid incorrectly identifying weights as dates.
+     */
+    private fun isWeightValue(dateStr: String, context: String, position: Int): Boolean {
+        try {
+            // First check if it's a simple decimal number with limited digits (typical of weights)
+            if (dateStr.matches(Regex("\\d+\\.\\d{1,2}"))) { // Matches patterns like "3.99", "29.2", etc.
+                // Look for weight indicators near this decimal number
+                val windowSize = 50
+                val startWindow = maxOf(0, position - windowSize)
+                val endWindow = minOf(context.length, position + dateStr.length + windowSize)
+
+                val windowText = context.substring(startWindow, endWindow).uppercase(Locale.getDefault())
+
+                // Check if any weight terms are in the vicinity
+                for (term in weightTerms) {
+                    if (windowText.contains(term)) {
+                        Log.d(TAG, "Identified $dateStr as weight value near term: $term")
+                        return true
+                    }
+                }
+
+                // Look for weight units explicitly attached to the number
+                val afterText = context.substring(
+                    position + dateStr.length,
+                    minOf(context.length, position + dateStr.length + 10)
+                ).uppercase(Locale.getDefault())
+
+                // Check if the number is directly followed by a weight unit
+                if (afterText.trim().startsWith("LB") ||
+                    afterText.trim().startsWith("OZ") ||
+                    afterText.trim().startsWith("G") ||
+                    afterText.trim().startsWith("KG")) {
+                    Log.d(TAG, "Identified $dateStr as weight value with unit: ${afterText.trim().take(5)}")
+                    return true
+                }
+
+                // If this is just a plain decimal with no other context, it's more likely to be a weight/price
+                // than a date when there are real date formats in the text
+                val textLower = context.lowercase(Locale.getDefault())
+                if (textLower.contains("sell thru") ||
+                    textLower.contains("sell by") ||
+                    textLower.contains("use by") ||
+                    Regex("[a-z]{3}\\.\\s*\\d{1,2}\\.\\d{1,2}").find(textLower) != null) { // Check for month patterns like Apr. 29.25
+                    Log.d(TAG, "Decimal $dateStr is likely not a date when real date formats exist in text")
+                    return true
+                }
+            }
+
+            // Check for context patterns that indicate this is a weight line
+            val line = context.substring(
+                maxOf(0, context.lastIndexOf('\n', position) + 1),
+                minOf(context.length, context.indexOf('\n', position).let { if (it == -1) context.length else it })
+            )
+
+            val lineUpper = line.uppercase(Locale.getDefault())
+
+            // Check for specific weight indicators in the line
+            for (term in weightTerms) {
+                if (lineUpper.contains(term)) {
+                    // This line mentions weight, so the number is likely a weight
+                    Log.d(TAG, "Number $dateStr is on a line with weight term: $term")
+                    return true
+                }
+            }
+
+            // Check if the line contains price indicators - decimal numbers on these lines are likely prices, not dates
+            val lineLower = line.lowercase(Locale.getDefault())
+            if (lineLower.contains("price") ||
+                lineLower.contains("$") ||
+                lineLower.contains("save") ||
+                lineLower.contains("/lb")) {
+                Log.d(TAG, "Number $dateStr is on a price-related line")
+                return true
+            }
+
+            return false
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking if value is a weight", e)
+            return false
+        }
+    }
+
     private fun isPriceFormat(dateStr: String, context: String, position: Int): Boolean {
         try {
+            // First check if this is likely a weight value
+            if (isWeightValue(dateStr, context, position)) {
+                Log.d(TAG, "Identified $dateStr as weight value, not a date")
+                return true // Exclude weights from date candidates (treated as "prices" for filtering)
+            }
+
             // Check if the date string itself looks like a price
             if (dateStr.contains("$") || dateStr.contains("/lb") || dateStr.contains("/kg")) {
                 return true
@@ -951,6 +1294,29 @@ object DateExtractor {
 
         Log.d(TAG, "Failed to parse date: $normalizedDate")
         return null
+    }
+
+    /**
+     * Convert a month name (full or abbreviated) to its numerical value (1-12)
+     */
+    private fun monthNameToNumber(month: String): Int {
+        val normalizedMonth = month.lowercase(Locale.getDefault()).trim()
+
+        return when(normalizedMonth) {
+            "jan", "january" -> 1
+            "feb", "february" -> 2
+            "mar", "march" -> 3
+            "apr", "april" -> 4
+            "may" -> 5
+            "jun", "june" -> 6
+            "jul", "july" -> 7
+            "aug", "august" -> 8
+            "sep", "september" -> 9
+            "oct", "october" -> 10
+            "nov", "november" -> 11
+            "dec", "december" -> 12
+            else -> throw IllegalArgumentException("Unknown month name: $month")
+        }
     }
 
     /**
@@ -1190,6 +1556,56 @@ object DateExtractor {
         // In a future enhancement, this could parse various formats and return a standardized one
         return dateStr.trim()
     }
+
+    /**
+     * Updates the last successfully extracted date and timestamp
+     */
+    private fun updateLastSuccessfulExtraction(date: String) {
+        if (date.isNotBlank()) {
+            // Don't update if same as last extraction
+            if (date == lastSuccessfulExtraction) {
+                // Just update timestamp to keep it "fresh"
+                lastExtractionTimestamp = System.currentTimeMillis()
+                return
+            }
+
+            // Update confidence for this date
+            val currentConfidence = confidenceHistory.getOrDefault(date, 0) + 1
+            confidenceHistory[date] = minOf(currentConfidence, CONFIDENCE_MAX)
+
+            // Only switch to a new date if it reaches the confidence threshold
+            if (currentConfidence >= CONFIDENCE_THRESHOLD || lastSuccessfulExtraction.isBlank()) {
+                Log.d(TAG, "Updating date extraction from '$lastSuccessfulExtraction' to '$date' (confidence: $currentConfidence)")
+                lastSuccessfulExtraction = date
+                lastExtractionTimestamp = System.currentTimeMillis()
+
+                // Reduce confidence of other dates
+                confidenceHistory.keys.forEach { otherDate ->
+                    if (otherDate != date && confidenceHistory[otherDate]!! > 0) {
+                        confidenceHistory[otherDate] = confidenceHistory[otherDate]!! - 1
+                    }
+                }
+            } else {
+                Log.d(TAG, "New date '$date' detected but keeping '$lastSuccessfulExtraction' (confidence: $currentConfidence/${CONFIDENCE_THRESHOLD})")
+            }
+
+            // Prune confidence history to prevent memory growth
+            if (confidenceHistory.size > 10) {
+                val keysToRemove = confidenceHistory.entries
+                    .filter { it.value == 0 }
+                    .map { it.key }
+                    .toList()
+
+                for (key in keysToRemove) {
+                    confidenceHistory.remove(key)
+                }
+            }
+        }
+    }
+
+    /**
+     * Provides a fallback date if one was recently extracted (second implementation removed to fix conflict)
+     */
 
     /**
      * Internal class to represent a date candidate with its weight and parsed date
